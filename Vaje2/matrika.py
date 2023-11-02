@@ -20,7 +20,7 @@ def Preberi(dat):
         a = [int(i) for i in line.strip().split(' ')]
         mat.append(a)
     return mat
-#mat = Preberi("primer.txt")
+mat = Preberi("primer.txt")
 #for i in mat:
 #    print(i)
-#narisi(mat)
+narisi(mat)

@@ -1,3 +1,5 @@
+import random
+
 def Preberi(str):
     f = open(str, 'r')
     #Če je v datoteki v prvi vrstici podano vozlišče
@@ -65,42 +67,57 @@ def JeDvodelenBFS(graf):
                     Dvodelen = False
     return Dvodelen
 
+# Ker v drevesu velja: st vozlisc - st povezav = 1, bo v gozdu veljalo
+# st vozlisc - st povezav = st komponent. To uporabimo v spodnji funkciji
+
 def JeGozdBFS(graf):
     """Funkcija sprejme graf in pove, če je gozd ali ne."""
-    #Spomnimo se: Graf G je gozd <=> vsaka komponenta je drevo <=> je dvodelen in ne vsebuje sodih ciklov
-    jegozd = True
-    for k in range(len(graf)):
-        l = BFS(k+1, graf)
-        for i in range(len(l)):
-            for j in graf[i]:
-                c = 0
-                if l[i] == l[j]:
-                    #Našli smo povezavo povprek
-                    jegozd = False
-                elif abs(l[i] - l[j]) == 1:
-                    c +=1
-                if c >= 3:
-                    #Našli smo sodi cikel!
-                    jegozd = False
+    n = len(graf) #število vozlišč
+    m = 0
+    jegozd = False
+    for i in graf:
+        m+=len(i)
+    m = m // 2 #Število povezav
+    #print("Število vozlišč:{}".format(n))
+    #print("Število povezav:{}".format(m))
+    c = Stevilokomponent(graf)
+    #print("Število komponent:{}".format(c))
+    if n - m == c:
+        jegozd = True
     return jegozd
 
-# Vrne narobe!^
-
-#Al pa st vozlisc - st povezav = st komponent (ker v drevesu st vozlisc - st povezav = 1)
-
+def DFS(graf):
+    n = len(graf)
+    #Izberemo naključno vozlišče
+    r = random.randint(0, n-1)
+    #Sestavimo sklad
+    S = [r]
+    #Seznam obiskanih vozlišč
+    o = []
+    while S != []:
+        u = S.pop(-1)
+        if (u not in o) and (u != None):
+            print(u)
+            o.append(u)
+            #Dodamo sosede od u v sklad
+            S = graf[u] + S
+            
+        
+        
 grf1 = Preberi("primer.txt")
 grf2 = Preberi("primer2.txt")
 grf3 = Preberi("primer3.txt")
 grf4 = Preberi("primer4.txt")
 #for i in grf[1]: print(i)
 print(grf1)
-print(BFS(10, grf1))
-print(Stevilokomponent(grf1))
-print(JeDvodelenBFS(grf1))
-print(JeDvodelenBFS(grf2))
-print(JeDvodelenBFS(grf3))
-print(JeDvodelenBFS(grf4))
-print(JeGozdBFS(grf1))
-print(JeGozdBFS(grf2))
-print(JeGozdBFS(grf3))
-print(JeGozdBFS(grf4))
+#print(BFS(10, grf1))
+#print(Stevilokomponent(grf1))
+#print(JeDvodelenBFS(grf1))
+#print(JeDvodelenBFS(grf2))
+#print(JeDvodelenBFS(grf3))
+#print(JeDvodelenBFS(grf4))
+#print(JeGozdBFS(grf1))
+#print(JeGozdBFS(grf2))
+#print(JeGozdBFS(grf3))
+#print(JeGozdBFS(grf4))
+print(DFS(grf1))
