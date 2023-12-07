@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0, 'C:/Users/Uporabnik/Documents/GitHub/OPDM-vaje/Vaje3')
+#sys.path.insert(1, 'C:/Users/Uporabnik/Documents/GitHub/OPDM-vaje/Vaje2')
 import BFSAlgoritem as bfs
+#import Naloga2 as N2
 #Vozlišče Hiperkocke dimenzije r predstavimo z nizom 0 in 1 dolžine r
 #Pretvori število (prvi argument) v binarni niz dolžine base
 #str = "{0:{fill}{base}b}".format(3, base=5, fill="0")
@@ -179,4 +181,92 @@ def GFab(graf, a, b):
 
 #print(GFab(Q3, 3, 7))
 #print(GJepopolnoprirejanje(Q3, GFab(Q3, 3, 7)))
-    
+
+def deletepovNWab(graf, a, b):
+    W = GW(graf, a, b)
+    for i in range(len(graf)): #Za vsako vozlišče:
+        for j in range(len(graf)):
+            if (i not in W) and (j not in W):
+                if j in graf[i]: #Če sta i in j povezani odstrani povezavo
+                    graf[i].remove(j)
+                    graf[j].remove(i)
+    return graf
+
+def odstraniVoz(graf, v):
+    """Sprejme vozlišče v (število med 0 in n-1) in ga odstrani iz grafa"""
+    graf.remove(graf[v])
+    for u in graf:
+        if v in u:
+            u.remove(v)
+        for t in u:
+            if t > v:
+                t -= 1
+    return graf
+def deletevozNWab(graf, a, b):
+    """Sprejme graf in dve njegovi vozlišči, a in b, ter iz grafa izbriše vsa vozlišča, ki niso v Wab"""
+    W = GW(graf, a, b)
+    for i in range(len(graf)): #Za vsako vozlišče:
+        if (i not in W): #Če i ni v Wab ga odstrani
+            graf = OdstraniVoz(graf, i)
+            W = GW(graf, a, b)
+    return graf
+
+def PopPrirejanjeIzomorfizem(graf, S):
+    """Preveri, ali popolno prirejanje S v grafu graf predstavlja izomorfizem med dvema grafoma."""
+    #Sestavimo S0 in S1, ki bota množici "začetnih" in "končnih" vozlišč povezav iz S. S bo potem predstavljal bijekcijo med podgrafoma v graf, generiranima s S0 in S1
+    #Če bo ta vozlišči iz S0 povezani more to biti natanko tedaj, ko bosta povezani "sorodni" vozlišči v S1. Torej s[0]~t[0] <=> s[1] ~ t[1]
+    Izo = True
+    S0 = [s[0] for s in S]
+    S1 = [s[1] for s in S]
+    #GS0 = graf.copy()
+    #GS1 = graf.copy()
+    for i in range(len(graf)): # Upoštevamo, da je |S0| = |S1|
+        for j in range(len(graf)):
+            if i in S0 and j in S0: #Gledamo samo tista vozlišča, ki so v S0
+                k = None
+                l = None #Določimo placeholderje za "sliki" i in j v S1
+                for s in S:
+                    if s[0] == i:
+                        k = s[1] #k je slika od i preko S
+                    elif s[0] == j:
+                        l = s[1] #l je slika od j preko S
+                if (i in graf[j]) and (j in graf[i]): #če sta i in j povezana
+                    if (l not in graf[k]): #Če k in l nista povezana (če sta bo k v graf[l] in l v graf[k], torej je dovolj preverit samo za enega)
+                        Izo = False
+    #Preverimo še v drugo smer
+    for k in range(len(graf)): # Upoštevamo, da je |S0| = |S1|
+        for l in range(len(graf)):
+            if k in S1 and l in S1: #Gledamo samo tista vozlišča, ki so v S1
+                i = None
+                j = None #Določimo placeholderje za "prasliki" k in l v S0
+                for s in S:
+                    if s[1] == k:
+                        i = s[0] #i je praslika od k preko S
+                    elif s[1] == l:
+                        j = s[0] #j je praslika od l preko S
+                if (k in graf[l]) and (l in graf[k]): #če sta k in l povezana
+                    if (j not in graf[i]): #Če i in j nista povezana (če sta, bo i v graf[j] in j v graf[i], torej je dovolj preverit samo za enega)
+                        Izo = False
+    return Izo
+
+def vpetpodgraf(graf, sez):
+    """Grafu graf določi vpeti podgraf generiran z množico vozlišč sez."""
+    S = [[sez.index(j) for j in graf[i] if j in sez] for i in sez]
+    return S
+
+def JeHiperkocka(graf):
+    if len(graf) <= 2:
+        if graf ==[[1],[0]]:
+            return True
+        else:
+            return False
+    else:
+        for i in range(len(graf)):
+            for j in range(len(graf)):
+                S0 = list(GW(graf, i, j))
+                S1 = list(GW(graf, j, i))
+                S = GFab(graf, i, j)
+                GS0 = vpetpodgraf(graf, S0)
+                GS1 = vpetpodgraf(graf, S1)
+                if GJepopolnoprirejanje(graf, S) and PopPrirejanjeIzomorfizem(graf, S):
+                    return (JeHiperkocka(GS0) and JeHiperkocka(GS1))
