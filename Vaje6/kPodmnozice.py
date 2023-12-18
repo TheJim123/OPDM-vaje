@@ -15,6 +15,8 @@ class kPodmnozica:
     def prvaKoLex(self):
         for i in range(self.k):
             self.T[i] = self.k - i
+    def prvaVV(self):
+        self.T = [i for i in range(1, self.k + 1)] #A^(n, k)_0
 
 #Leksikografska:
         
@@ -193,4 +195,98 @@ def NaslednjikLex2(podmn):
     else:
         r = math.comb(n, k) - t #rang naslednika od podmn v lex
         return DerangLex(r)
+
+# Vrteca vrata:
                 
+def UstrezaVV(podmn):
+    if podmn.T[0] < 1 or podmn.T[-1] > podmn.n:
+        return False
+    elif (podmn.k == podmn.n):
+        return (podmn.T == [i for i in range(1, n+1)])
+    elif podmn.k == 0:
+        return (podmn.k == [])
+    else:
+        for i in range(podmn.k - 1):
+            if podmn.T[i] >= podmn.T[i+1]:
+                return False
+        return True
+    
+def RangVV(podmn):
+    k = podmn.k
+    n = podmn.n
+    T = podmn.T
+    if not UstrezaVV(podmn):
+        return "Ne ustreza ureditvi z vrtečimi vrati!"
+    else:
+        if k % 2 == 0:
+            r = 0
+        else:
+            r = -1
+        s = 1
+        for i in range(k, 0, -1): #k, k-1, ..., 1
+            r += s*math.comb(T[i-1], i)
+            s = -s
+        return r
+
+def DerangVV(r, k, n):
+    P = kPodmnozica(k, n)
+    x = n
+    for i in range(k, 0, -1):
+        #print("i: {}".format(i))
+        while r < math.comb(x, i):
+            x -= 1
+            #print("x: {}".format(x))
+        P.T[i-1] = x+1
+        r = math.comb(x+1, i) - 1 - r
+    return P
+
+def NaslednjikVV(podmn):
+    k = podmn.k
+    n = podmn.n
+    T = podmn.T
+
+    U = kPodmnozica(k, n)
+    U.T = T.copy()
+    
+    if UstrezaVV(podmn):
+        j = 1
+        while (j <= k) and (T[j-1] == j):
+            j += 1
+        if (j >= k) and (T[k-1] == n):
+            return "Nedefinirano"
+        elif (k - j) % 2 == 0:
+            if T[j] == T[j-1] + 1:
+                U.T[j] = T[j-1]
+                U.T[j-1] = j
+            else:
+                U.T[j-2] = T[j-1]
+                U.T[j-1] = T[j-1] + 1
+        else: # k%2 != j%2
+            if (j > 1):
+                U.T[j-2] = j
+                if j > 2:
+                    U.T[j-3] = j - 1
+            else: #j == 1
+                U.T[0] = T[0] - 1
+        return U
+
+def VVPodmn(k, n):
+    """Za naravni števili 0 < k <= n vrne seznam k-podmnožic v ureditvi z vrtečimi vrati."""
+    P = kPodmnozica(k, n)
+    P.prvaVV() #Pripravi prvo k-podmnozico
+    #P.izpisi()
+    Sez = [P] #Jo da v seznam
+    
+    L = math.comb(n, k)
+    i = 1
+    while (i <= L-1) and (P != "Nedefinirano"):
+        P = NaslednjikVV(P)
+        #P.izpisi()
+        Sez.append(P)
+        i += 1
+    return Sez
+
+A = kPodmnozica(3, 4)
+A.prvaVV()
+B = kPodmnozica(3, 4)
+B.T = [2, 3, 4]
