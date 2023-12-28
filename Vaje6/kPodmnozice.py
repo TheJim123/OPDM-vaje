@@ -165,7 +165,7 @@ def KoLexPodmn(k, n):
 # Rang, Derang in Naslednjik za Leksikografsko preko koleksikografske:
 
 def pretvori(podmn):
-    """Sprejme k-podmnožico T in vrne množico {n - i + 1; i \in T}"""
+    """Sprejme k-podmnožico T in vrne množico {n - i + 1; i je el. T}"""
     T = podmn.T
     k = podmn.k
     n = podmn.n
