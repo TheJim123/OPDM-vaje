@@ -51,5 +51,5 @@ def izpisiGraf(graf):
                 el.izpisi()
                 el = el.n
 
-graf = preberi("primer.txt")
+#graf = preberi("primer.txt")
 #izpisiGraf(graf)

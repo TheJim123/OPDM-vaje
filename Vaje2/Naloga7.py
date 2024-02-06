@@ -81,7 +81,7 @@ def IzpisiPovezave(graf):
 
 
 
-graf = rs.preberi("primer.txt")
+#graf = rs.preberi("primer.txt")
 #rs.izpisiGraf(graf)
 #print(obstajaPovezava(graf, 3, 1))
 #print(obstajaPovezava(graf, 1, 2))

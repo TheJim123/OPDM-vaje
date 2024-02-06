@@ -2,9 +2,9 @@ import math
 import Naloga7 as n7
 import razsirjeniSeznam as rs
 
-def UrediRazsirjenSezSosedov(sez):
+def UrediRazsirjenSezSosedov(graf):
     """Sprejme razširjen seznam sosedov in ga uredi, ter vrne"""
-    n = len(sez)
+    n = len(graf)
     #V našem branju grafa ima "sez" dolžino, ki je enaka kvadratu števila vozlišč
     m = int(math.sqrt(n))
     Urejen = [[] for i in range(m)]
@@ -32,7 +32,8 @@ def UrediRazsirjenSezSosedov(sez):
             el = el.n
     return Urejen
 
-graf = rs.preberi("primer.txt")
-rs.izpisiGraf(graf)
-urejen = UrediRazsirjenSezSosedov(graf)
+grf = rs.preberi("primer.txt")
+rs.izpisiGraf(grf)
+print(len(grf))
+urejen = UrediRazsirjenSezSosedov(grf)
 rs.izpisiGraf(urejen)
